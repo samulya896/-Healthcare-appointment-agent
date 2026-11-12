@@ -1,0 +1,14 @@
+@import './tokens.css';
+@import './base.css';
+@import './ui.css';
+@import './layout.css';
+@import './auth.css';
+@import './dashboard.css';
+@import './doctors.css';
+@import './appointments.css';
+@import './profile.css';
+@import './chat.css';
+@import './symptoms.css';
+
+.settings-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.not-found { display: grid; place-items: center; min-height: 60dvh; }

@@ -4,7 +4,8 @@
   "description": "Healthcare Appointment Scheduling Chatbot - Backend Server",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node --test test/api.test.js"
   },
   "dependencies": {
     "express": "^4.21.0",
@@ -12,5 +13,8 @@
     "dotenv": "^16.4.5",
     "@google/generative-ai": "^0.21.0",
     "uuid": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

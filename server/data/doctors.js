@@ -19,6 +19,27 @@ function generateSlots() {
   return slots;
 }
 
+
+// Demo seed profile details (qualifications, experience, fee). Illustrative data for the hackathon demo.
+const profiles = {
+  prov_101: { qualifications: "MBBS, FCPS (Orthopaedic Surgery)", experienceYears: 14, consultationFee: 3500 },
+  prov_102: { qualifications: "MBBS, MS (Orthopaedics)", experienceYears: 9, consultationFee: 3000 },
+  prov_201: { qualifications: "MBBS, FCPS (Obstetrics & Gynaecology)", experienceYears: 12, consultationFee: 3500 },
+  prov_202: { qualifications: "MBBS, MRCOG", experienceYears: 8, consultationFee: 3000 },
+  prov_301: { qualifications: "MBBS, MRCGP", experienceYears: 15, consultationFee: 2000 },
+  prov_302: { qualifications: "MBBS, FCPS (Family Medicine)", experienceYears: 7, consultationFee: 1800 },
+  prov_401: { qualifications: "BDS, MDS (Oral Surgery)", experienceYears: 10, consultationFee: 2500 },
+  prov_402: { qualifications: "BDS, FCPS (Orthodontics)", experienceYears: 6, consultationFee: 2200 },
+  prov_501: { qualifications: "MBBS, FCPS (Dermatology)", experienceYears: 11, consultationFee: 3000 },
+  prov_502: { qualifications: "MBBS, MCPS (Dermatology)", experienceYears: 5, consultationFee: 2500 },
+  prov_601: { qualifications: "MBBS, FCPS (Cardiology)", experienceYears: 18, consultationFee: 4500 },
+  prov_602: { qualifications: "MBBS, MD (Cardiology)", experienceYears: 10, consultationFee: 4000 },
+  prov_701: { qualifications: "MSc Clinical Psychology, PhD", experienceYears: 12, consultationFee: 3000 },
+  prov_702: { qualifications: "MPhil Clinical Psychology", experienceYears: 6, consultationFee: 2500 },
+  prov_801: { qualifications: "MBBS, FCPS (Paediatrics)", experienceYears: 13, consultationFee: 2500 },
+  prov_802: { qualifications: "MBBS, DCH, MRCPCH", experienceYears: 8, consultationFee: 2200 },
+};
+
 const doctors = [
   // Orthopedic (2)
   { id: "prov_101", name: "Dr. Ahmed Khan", specialty: "orthopedic", availableSlots: generateSlots() },
@@ -52,5 +73,7 @@ const doctors = [
   { id: "prov_801", name: "Dr. Imran Farooq", specialty: "pediatrician", availableSlots: generateSlots() },
   { id: "prov_802", name: "Dr. Amna Yousuf", specialty: "pediatrician", availableSlots: generateSlots() },
 ];
+
+for (const d of doctors) Object.assign(d, profiles[d.id]);
 
 module.exports = doctors;

@@ -113,11 +113,17 @@ function bookAppointmentTool(providerId, patientName, patientPhone, startTime, r
     timeSlot,
     reason,
     calendarLink,
+    specialty: doctor.specialty,
+    status: "Confirmed",
   });
 
   return {
     success: true,
     bookingId,
+    doctorName: doctor.name,
+    startTime,
+    date: dateStr,
+    timeSlot,
     message: "Appointment booked successfully",
     calendarLink,
   };

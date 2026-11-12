@@ -1,0 +1,25 @@
+.appt-card { display: flex; align-items: center; gap: 18px; padding: 18px 20px; }
+.appt-date {
+  flex: none; width: 58px; height: 62px; border-radius: var(--radius); background: var(--primary-soft); color: var(--primary-ink);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1;
+}
+.appt-date span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.appt-date strong { font-size: 22px; }
+.appt-main { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.appt-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.appt-meta { display: flex; gap: 16px; flex-wrap: wrap; color: var(--text-muted); font-size: 13px; }
+.appt-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.appt-reason { font-size: 13px; }
+.appt-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.mini-appt { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.mini-appt:last-child { border-bottom: 0; }
+.mini-appt div { display: grid; min-width: 0; }
+.mini-appt .muted { font-size: 13px; }
+
+@media (max-width: 640px) {
+  .appt-card { flex-wrap: wrap; }
+  .appt-main { flex-basis: calc(100% - 80px); }
+  .appt-actions { width: 100%; justify-content: stretch; }
+  .appt-actions .btn { flex: 1; }
+}

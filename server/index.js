@@ -7,17 +7,145 @@ const { chat } = require("./services/geminiService");
 const patients = require("./data/patients");
 const bookings = require("./data/bookings");
 const doctors = require("./data/doctors");
+const { checkAvailabilityTool, bookAppointmentTool, cancelAppointmentTool } = require("./tools/schedulingTools");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+// CORS: set CORS_ORIGINS to a comma-separated list (e.g. your Vercel URL) to restrict
+// browser access. When unset, all origins are allowed (fine for local dev / demos).
+const allowedOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((o) => o.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+app.use(
+  cors({
+    origin: allowedOrigins.length
+      ? (origin, cb) => cb(null, !origin || allowedOrigins.includes(origin))
+      : true,
+  })
+);
 app.use(express.json());
 
-// Health check
+// Health check (never exposes secrets)
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
+  const key = (process.env.GEMINI_API_KEY || "").trim();
+  res.json({
+    status: "ok",
+    uptimeSeconds: Math.round(process.uptime()),
+    assistantMode: key.startsWith("AIzaSy") ? "gemini" : "clinical-fallback",
+  });
+});
+
+const TZ = "Asia/Karachi";
+const todayKarachi = () => new Date().toLocaleDateString("en-CA", { timeZone: TZ });
+const nowMinutesKarachi = () => {
+  const [h, m] = new Date()
+    .toLocaleTimeString("en-GB", { timeZone: TZ, hour12: false, hour: "2-digit", minute: "2-digit" })
+    .split(":")
+    .map(Number);
+  return h * 60 + m;
+};
+
+// Slots still bookable for a date (hides dates and times that already passed).
+function bookableSlots(doctor, date) {
+  const slots = doctor.availableSlots[date] || [];
+  const today = todayKarachi();
+  if (date < today) return [];
+  if (date > today) return slots;
+  const now = nowMinutesKarachi();
+  return slots.filter((t) => {
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m > now;
+  });
+}
+
+function publicDoctor(d) {
+  const availableDates = Object.keys(d.availableSlots)
+    .sort()
+    .filter((date) => bookableSlots(d, date).length > 0);
+  const { availableSlots: _slots, ...rest } = d;
+  return { ...rest, availableDates, nextAvailableDate: availableDates[0] || null };
+}
+
+// -----------------------------------------------------------------------------
+// Doctors & Appointments (REST wrappers around the same tools the AI assistant uses)
+// -----------------------------------------------------------------------------
+
+// GET /api/doctors?specialty=&q=
+app.get("/api/doctors", (req, res) => {
+  const specialty = (req.query.specialty || "").toString().toLowerCase();
+  const q = (req.query.q || "").toString().toLowerCase();
+  const list = doctors
+    .filter((d) => !specialty || d.specialty.toLowerCase() === specialty)
+    .filter((d) => !q || d.name.toLowerCase().includes(q) || d.specialty.toLowerCase().includes(q))
+    .map(publicDoctor);
+  res.json({ success: true, doctors: list });
+});
+
+// GET /api/doctors/:id
+app.get("/api/doctors/:id", (req, res) => {
+  const doctor = doctors.find((d) => d.id === req.params.id);
+  if (!doctor) return res.status(404).json({ error: "Doctor not found." });
+  res.json({ success: true, doctor: publicDoctor(doctor) });
+});
+
+// GET /api/doctors/:id/availability?date=YYYY-MM-DD
+app.get("/api/doctors/:id/availability", (req, res) => {
+  const doctor = doctors.find((d) => d.id === req.params.id);
+  if (!doctor) return res.status(404).json({ error: "Doctor not found." });
+  const date = (req.query.date || "").toString();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return res.status(400).json({ error: "date query parameter (YYYY-MM-DD) is required." });
+  }
+  const info = checkAvailabilityTool(doctor.id, date);
+  res.json({
+    success: true,
+    providerId: doctor.id,
+    doctorName: doctor.name,
+    date,
+    dateLabel: info.dateLabel || date,
+    availableSlots: bookableSlots(doctor, date),
+  });
+});
+
+// POST /api/appointments  { patientId, providerId, date, timeSlot, reason }
+app.post("/api/appointments", (req, res) => {
+  const { patientId, providerId, date, timeSlot, reason } = req.body || {};
+  const patient = patients.find((p) => p.id === patientId);
+  if (!patient) return res.status(404).json({ error: "Patient not found." });
+  if (!providerId || !date || !timeSlot) {
+    return res.status(400).json({ error: "providerId, date and timeSlot are required." });
+  }
+  const doctor = doctors.find((d) => d.id === providerId);
+  if (doctor && !bookableSlots(doctor, date).includes(timeSlot)) {
+    return res.status(409).json({ error: "That time slot is no longer available. Please pick another." });
+  }
+  const result = bookAppointmentTool(
+    providerId,
+    patient.name,
+    patient.phone,
+    `${date}T${timeSlot}:00+05:00`,
+    (reason || "").trim() || "General consultation"
+  );
+  if (!result.success) return res.status(409).json({ error: result.message });
+  const appointment = bookings.find((b) => b.bookingId === result.bookingId);
+  res.status(201).json({ success: true, appointment });
+});
+
+// DELETE /api/appointments/:bookingId?patientId=
+app.delete("/api/appointments/:bookingId", (req, res) => {
+  const patient = patients.find((p) => p.id === req.query.patientId);
+  if (!patient) return res.status(404).json({ error: "Patient not found." });
+  const booking = bookings.find((b) => b.bookingId === req.params.bookingId);
+  if (!booking) return res.status(404).json({ error: "Appointment not found." });
+  if (booking.patientPhone !== patient.phone) {
+    return res.status(403).json({ error: "This appointment belongs to another patient." });
+  }
+  const result = cancelAppointmentTool(booking.providerId, booking.startTime, booking.patientPhone);
+  if (!result.success) return res.status(409).json({ error: result.message });
+  res.json({ success: true, message: result.message });
 });
 
 // -----------------------------------------------------------------------------
@@ -65,7 +193,7 @@ app.post("/api/auth/register", (req, res) => {
     password,
     phone: phone.trim(),
     dob: dob || "Not specified",
-    age: dob ? Math.floor((new Date() - new Date(dob)) / 31557600000) : 30,
+    age: dob ? Math.floor((new Date() - new Date(dob)) / 31557600000) : null,
     gender: gender || "Not specified",
     bloodGroup: bloodGroup || "Unknown",
     address: "Not provided",
@@ -124,7 +252,11 @@ app.put("/api/patient/:id", (req, res) => {
 
   if (name !== undefined) patient.name = name;
   if (phone !== undefined) patient.phone = phone;
-  if (dob !== undefined) patient.dob = dob;
+  if (dob !== undefined) {
+    patient.dob = dob;
+    const t = new Date(dob).getTime();
+    if (!Number.isNaN(t)) patient.age = Math.floor((Date.now() - t) / 31557600000);
+  }
   if (gender !== undefined) patient.gender = gender;
   if (bloodGroup !== undefined) patient.bloodGroup = bloodGroup;
   if (address !== undefined) patient.address = address;
@@ -167,11 +299,6 @@ app.post("/api/chat", async (req, res) => {
       return res.status(400).json({ error: "sessionId and message are required." });
     }
 
-    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "your_gemini_api_key_here") {
-      const msg = "⚠️ **Gemini API Key Missing**: Please add your Gemini API key to `server/.env` (e.g. `GEMINI_API_KEY=AIzaSy...`) and restart the server to chat with the assistant.";
-      return res.json({ response: msg, reply: msg });
-    }
-
     const reply = await chat(sessionId, message, patientContext);
     res.json({ response: reply, reply });
   } catch (error) {
@@ -180,6 +307,10 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Healthcare Scheduler server running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Healthcare Scheduler server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

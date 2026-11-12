@@ -1,98 +1,108 @@
-# 🏥 Healthcare Appointment Scheduling Portal & Chatbot
+# CareLink — Healthcare Appointment Portal
 
-An AI-powered appointment scheduling assistant with a dedicated **Patient Portal** and **Symptom Relief & Medicine Guide**, built with **React**, **Node.js/Express**, and the **Google Gemini API** (`gemini-3.1-flash-lite`).
+A hackathon demo: a React patient portal with an AI scheduling assistant (Google Gemini function calling), doctor discovery, appointment booking/cancellation, a health profile and a symptom relief guide. Backed by an Express API with in-memory data.
 
----
+> **Demo only.** Not a production healthcare platform. Data is held in memory and resets whenever the backend restarts. The symptom guide and assistant do not provide medical diagnoses.
 
-## ✨ Features
+## Features
 
-### 1. 💊 Symptom Relief & General Medication Guide *(New)*
-- **Over-the-Counter (OTC) Recommendations**: Safe, standard over-the-counter medication guides (e.g. Paracetamol/Acetaminophen for fever, Antacids & ORS for stomach upset, Clove oil & Saline rinses for tooth pain, Topical gels for back/joint stiffness).
-- **Home Care & First Aid Instructions**: Step-by-step non-pharmacological care (R.I.C.E. protocol, hydration, steam inhalation, posture & sleep hygiene).
-- **⚠️ Personalized Patient Allergy Cross-Check**: Automatically checks the logged-in patient's recorded allergies and displays prominent safety alerts (e.g. flagging NSAID/Aspirin risks for patients with recorded sensitivities).
-- **🚨 Red Flags & Emergency Warning Signs**: Highlights critical symptoms that require immediate emergency care.
-- **1-Click Doctor Booking**: Directly triggers the AI Assistant with pre-filled context to find the relevant specialist.
-- **🖨️ 1-Click Print / Save Health Summary**: Clean printable export of the patient's medical summary card.
+- **Auth** — sign in, register, one-click demo logins (John Doe, Ayesha Khan), password toggle, validation.
+- **Dashboard** — next appointment, health summary, current symptoms, upcoming visits, quick actions (all from the backend).
+- **Find Doctors** — search + specialty filters, qualifications, experience, fee, next availability.
+- **Booking** — pick date → fetch real slots → pick slot → confirm. Success is shown only after the backend confirms. Cancellation with confirmation; upcoming/history tabs.
+- **AI Assistant** — dedicated chat page, suggested prompts, typing indicator, appointment confirmation card. Uses Gemini with function calling; falls back to the built-in clinical scheduler when no valid key is set.
+- **Health profile** — per-section edit/save/cancel for personal details, history, allergies, medications and symptoms.
+- **Symptom relief** — OTC info, home care, red flags, allergy warnings, disclaimer and a specialist booking shortcut (content from `client/src/data/symptomReliefData.js`, unchanged).
+- Light/dark theme, responsive layout (sidebar → drawer + bottom nav on mobile).
 
-### 2. 🌓 Dark & Light Mode
-- One-click toggle (`🌙 Dark` / `☀️ Light`) available in the top navigation bar and on the login screen.
-- Persisted in `localStorage` across page refreshes.
-- Custom medical-grade dark theme with smooth color transitions and accessibility contrast.
-
-### 3. 🔐 Patient Authentication
-- Secure Login & Registration for patients.
-- **⚡ 1-Click Demo Login** buttons on the login screen for instant testing:
-  - **John Doe** (`john@example.com` / `password123`)
-  - **Ayesha Khan** (`ayesha@example.com` / `password123`)
-
-### 4. 📋 Patient Health Portal
-- **Major Profile Details**: Full Name, Email, Primary Phone, Age, Date of Birth, Gender, Blood Group, Residential Address, Emergency Contact.
-- **🩺 Common Symptoms / Current Concerns**: Live interactive list of frequent or ongoing symptoms with real-time add/remove.
-- **📋 Past Medical History & Surgeries**: Chronological conditions, previous surgeries, and hospitalizations.
-- **⚠️ Known Allergies & Active Medications**: Safety warnings, active prescriptions, and drug sensitivities.
-
-### 5. 💬 AI Healthcare Assistant
-- Adheres to medical compliance guidelines (never diagnoses or prescribes; advises emergency care for life-threatening symptoms).
-- Routes concerns to 8 exact medical specialties:
-  - `orthopedic`, `gynecologist`, `general physician`, `dentist`, `dermatologist`, `cardiologist`, `therapist`, `pediatrician`
-- Automatically loads the logged-in patient's profile into context.
-
-### 6. 📅 My Appointments
-- Overview of all confirmed bookings with doctor name, specialty, date, and appointment time in `Asia/Karachi` timezone (`+05:00`).
-- Direct **Add to Google Calendar** link generation.
-
----
-
-## 📁 Project Structure
+## Project structure
 
 ```
-hack/
-├── README.md
-├── package.json
-├── client/                               # React + Vite Frontend
-│   └── src/
-│       ├── App.jsx / App.css             # Main view switcher & Dark/Light CSS variables
-│       ├── data/
-│       │   └── symptomReliefData.js      # OTC suggestions, home remedies & red flags
-│       ├── components/
-│       │   ├── SymptomReliefGuide.jsx / .css # OTC medication & home care guide
-│       │   ├── LoginPage.jsx / .css      # Sign in, register & theme toggle
-│       │   ├── PatientPortal.jsx / .css  # Patient details, symptoms & medical history
-│       │   ├── AppointmentsList.jsx / .css # Scheduled doctor appointments
-│       │   ├── Header.jsx / .css         # Navigation bar, theme toggle & user logout
-│       │   ├── ChatWindow.jsx / .css     # Auto-scrolling chat history
-│       │   ├── MessageBubble.jsx / .css  # Markdown bubbles with calendar links
-│       │   └── InputBar.jsx / .css       # Text input with Enter to send
-│       └── services/
-│           └── api.js                    # Auth, patient data & chat API service
-└── server/                               # Node.js + Express Backend
-    ├── index.js                          # Express routes (auth, patient, chat, health)
-    ├── data/
-    │   ├── patients.js                   # Patient database (demographics, history, symptoms)
-    │   ├── doctors.js                    # 16 doctors across 8 specialties + slot schedules
-    │   └── bookings.js                   # Appointments database
-    ├── services/
-    │   └── geminiService.js              # Gemini 3.1 Flash Lite function-calling loop
-    ├── tools/
-    │   └── schedulingTools.js            # 4 scheduling tools (find, check, book, cancel)
-    └── prompts/
-        └── systemPrompt.js               # Clinical safety & specialty routing prompt
+client/                      React + Vite (JavaScript, plain CSS with design tokens)
+  src/
+    components/              common · layout · auth · dashboard · profile · doctors · chat · appointments · symptoms
+    pages/                   one file per route
+    context/                 Auth, Theme, Chat, Toast providers
+    hooks/                   useAsync, useAppointments, useServerStatus
+    services/api.js          the only place that talks to the backend (reads VITE_API_URL)
+    styles/                  tokens.css (design system) + per-area stylesheets
+    utils/                   formatting + validation
+    data/symptomReliefData.js  static clinical content
+  vercel.json                SPA rewrite for Vercel
+server/                      Express API
+  index.js                   routes (auth, patient, doctors, availability, appointments, chat, health)
+  data/ tools/ services/ prompts/   seeded data, scheduling tools, Gemini + clinical fallback
+  test/api.test.js           API tests (node:test)
+render.yaml                  Render blueprint for the backend
 ```
 
----
+## Local setup
 
-## 🚀 Running the App
+Requires Node.js 18+.
 
-### 1. Backend Server
-```powershell
-cd c:\Users\Arnav\Downloads\hack\server
-npm start
+```bash
+npm run install:all        # installs server + client dependencies
+cp server/.env.example server/.env   # optional: add GEMINI_API_KEY
 ```
-*Listens on `http://localhost:3001`.*
 
-### 2. Frontend Client
-```powershell
-cd c:\Users\Arnav\Downloads\hack\client
-npm run dev
+Run in two terminals:
+
+```bash
+npm run server             # API on http://localhost:3001
+npm run client             # UI on http://localhost:5173 (proxies /api to :3001)
 ```
-*Open `http://localhost:5173/` in your browser.*
+
+Demo logins: `john@example.com` / `ayesha@example.com`, password `password123`.
+
+Tests and build:
+
+```bash
+npm run test:server        # backend API tests
+npm run build:client       # production build -> client/dist
+```
+
+## Environment variables
+
+| Where | Variable | Purpose |
+|---|---|---|
+| client (Vercel) | `VITE_API_URL` | Public URL of the backend, no trailing slash. Leave empty locally. |
+| server (Render) | `GEMINI_API_KEY` | Gemini key. **Server only.** Optional — without it the clinical fallback answers. |
+| server | `GEMINI_MODEL` | Defaults to `gemini-2.5-flash` in `.env.example`. |
+| server | `CORS_ORIGINS` | Comma-separated allowed origins, e.g. `https://your-app.vercel.app`. Empty = allow all. |
+| server | `PORT` | Set automatically by Render. |
+
+## Deployment
+
+The frontend (Vercel) and backend (Render) are deployed **separately**. Deploy the backend first so you have its URL.
+
+### 1. Backend on Render
+
+1. Push the repo to GitHub.
+2. Render → **New → Web Service** (or **Blueprint** using `render.yaml`) → select the repo.
+3. Settings: **Root Directory** `server`, **Build Command** `npm install`, **Start Command** `npm start`, **Health Check Path** `/api/health`.
+4. Environment: add `GEMINI_API_KEY` (optional). Leave `CORS_ORIGINS` empty for now.
+5. Deploy and note the URL, e.g. `https://carelink-api.onrender.com`. Check `<url>/api/health` returns `{"status":"ok",...}`.
+
+### 2. Frontend on Vercel
+
+1. Vercel → **Add New → Project** → import the repo.
+2. **Root Directory** `client`. Framework preset: Vite (build `npm run build`, output `dist`; `vercel.json` already sets these and the SPA rewrite).
+3. Environment variable: `VITE_API_URL` = your Render URL (no trailing slash).
+4. Deploy and note the Vercel URL.
+
+### 3. Lock down CORS
+
+In Render, set `CORS_ORIGINS` to your Vercel URL (add preview domains comma-separated if needed) and redeploy. Open the Vercel app → Settings page shows the API endpoint and server status.
+
+> Render's free tier sleeps after inactivity; the first request can take up to a minute. The UI shows a "connecting" banner, and the first demo action may be slow — open the site a minute before presenting.
+
+## API summary
+
+`GET /api/health` · `POST /api/auth/login|register` · `GET|PUT /api/patient/:id` · `GET /api/patient/:id/appointments` · `GET /api/doctors[?specialty=&q=]` · `GET /api/doctors/:id` · `GET /api/doctors/:id/availability?date=YYYY-MM-DD` · `POST /api/appointments` · `DELETE /api/appointments/:id?patientId=` · `POST /api/chat`
+
+## Known limitations
+
+- In-memory data: registrations, bookings and profile edits reset when the backend restarts (the UI signs you out if your account no longer exists).
+- Authentication is the original demo mechanism (no tokens/sessions); do not use real credentials or health data.
+- Doctor qualifications, experience and fees are illustrative seed data added in `server/data/doctors.js`.
+- Appointment times are in the clinic timezone (Asia/Karachi, +05:00).

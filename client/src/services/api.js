@@ -1,118 +1,100 @@
 import { v4 as uuidv4 } from 'uuid';
 
-let sessionId = uuidv4();
+// Empty in dev (Vite proxies /api). Set VITE_API_URL in production.
+export const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
-export function getSessionId() {
-  return sessionId;
+export class ApiError extends Error {
+  constructor(message, { status = 0, network = false } = {}) {
+    super(message);
+    this.status = status;
+    this.network = network;
+  }
 }
 
-export function getCurrentUser() {
+async function request(path, { method = 'GET', body, timeout = 30000 } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  let res;
   try {
-    const raw = localStorage.getItem('hc_patient_user');
+    res = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+  } catch (err) {
+    throw new ApiError(
+      err.name === 'AbortError'
+        ? 'The server took too long to respond. It may be waking up — please try again in a moment.'
+        : 'Cannot reach the server. Check your connection or try again shortly.',
+      { network: true }
+    );
+  } finally {
+    clearTimeout(timer);
+  }
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new ApiError(data?.error || `Request failed (${res.status})`, { status: res.status });
+  }
+  return data;
+}
+
+// ---- Session user (existing localStorage mechanism) ----
+const USER_KEY = 'hc_patient_user';
+export function getStoredUser() {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
-
-export function setCurrentUser(user) {
-  if (user) {
-    localStorage.setItem('hc_patient_user', JSON.stringify(user));
-  } else {
-    localStorage.removeItem('hc_patient_user');
-  }
-}
-
-export async function login(email, password) {
-  let res;
+export function storeUser(user) {
   try {
-    res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-  } catch (err) {
-    throw new Error('Cannot connect to backend server. Ensure backend is running.');
+    if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
+    else localStorage.removeItem(USER_KEY);
+  } catch {
+    /* storage unavailable */
   }
-
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error(data?.error || 'Login failed');
-  }
-  setCurrentUser(data.patient);
-  return data.patient;
 }
 
-export async function register(patientData) {
-  let res;
-  try {
-    res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(patientData),
-    });
-  } catch (err) {
-    throw new Error('Cannot connect to backend server. Ensure backend is running.');
-  }
+// ---- Health ----
+export const checkHealth = () => request('/api/health', { timeout: 45000 });
 
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error(data?.error || 'Registration failed');
-  }
-  setCurrentUser(data.patient);
-  return data.patient;
-}
+// ---- Auth ----
+export const login = (email, password) =>
+  request('/api/auth/login', { method: 'POST', body: { email, password } }).then((d) => d.patient);
+export const register = (payload) =>
+  request('/api/auth/register', { method: 'POST', body: payload }).then((d) => d.patient);
 
-export async function getPatientProfile(patientId) {
-  const res = await fetch(`/api/patient/${patientId}`);
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error(data?.error || 'Failed to fetch profile');
-  }
-  return data.patient;
-}
+// ---- Patient ----
+export const getPatient = (id) => request(`/api/patient/${id}`).then((d) => d.patient);
+export const updatePatient = (id, updates) =>
+  request(`/api/patient/${id}`, { method: 'PUT', body: updates }).then((d) => d.patient);
+export const getPatientAppointments = (id) =>
+  request(`/api/patient/${id}/appointments`).then((d) => d.appointments || []);
 
-export async function updatePatientProfile(patientId, updates) {
-  const res = await fetch(`/api/patient/${patientId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updates),
+// ---- Doctors & appointments ----
+export const getDoctors = () => request('/api/doctors').then((d) => d.doctors || []);
+export const getAvailability = (doctorId, date) =>
+  request(`/api/doctors/${doctorId}/availability?date=${encodeURIComponent(date)}`);
+export const bookAppointment = (payload) =>
+  request('/api/appointments', { method: 'POST', body: payload }).then((d) => d.appointment);
+export const cancelAppointment = (bookingId, patientId) =>
+  request(`/api/appointments/${bookingId}?patientId=${encodeURIComponent(patientId)}`, {
+    method: 'DELETE',
   });
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error(data?.error || 'Failed to update profile');
-  }
-  setCurrentUser(data.patient);
-  return data.patient;
-}
 
-export async function getPatientAppointments(patientId) {
-  const res = await fetch(`/api/patient/${patientId}/appointments`);
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error(data?.error || 'Failed to fetch appointments');
-  }
-  return data.appointments || [];
-}
-
-export async function sendMessage(message, patientContext = null) {
-  let response;
-  try {
-    response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId, message, patientContext }),
-    });
-  } catch (netErr) {
-    throw new Error('Cannot connect to backend server. Make sure the backend is running (`npm start` inside `server/`).');
-  }
-
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const errorDetails = data?.error || `Server error (${response.status})`;
-    throw new Error(errorDetails);
-  }
-
+// ---- Chat ----
+let sessionId = uuidv4();
+export const resetChatSession = () => {
+  sessionId = uuidv4();
+};
+export async function sendChatMessage(message, patientContext) {
+  const data = await request('/api/chat', {
+    method: 'POST',
+    body: { sessionId, message, patientContext },
+    timeout: 90000,
+  });
   return data?.response || data?.reply || 'No response received.';
 }
