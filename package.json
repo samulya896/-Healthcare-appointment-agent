@@ -1,0 +1,19 @@
+{
+  "name": "healthcare-scheduler",
+  "version": "1.0.0",
+  "description": "Healthcare Appointment Scheduling Chatbot powered by Gemini",
+  "scripts": {
+    "server": "cd server && node index.js",
+    "client": "cd client && npm run dev",
+    "build:client": "cd client && npm run build"
+  },
+  "keywords": [
+    "healthcare",
+    "scheduler",
+    "gemini",
+    "appointment-booking",
+    "react"
+  ],
+  "author": "",
+  "license": "ISC"
+}

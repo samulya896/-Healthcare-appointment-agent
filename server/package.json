@@ -1,0 +1,16 @@
+{
+  "name": "healthcare-scheduler-server",
+  "version": "1.0.0",
+  "description": "Healthcare Appointment Scheduling Chatbot - Backend Server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "@google/generative-ai": "^0.21.0",
+    "uuid": "^10.0.0"
+  }
+}

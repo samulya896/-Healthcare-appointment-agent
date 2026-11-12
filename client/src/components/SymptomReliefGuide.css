@@ -1,0 +1,410 @@
+.relief-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.relief-header-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  transition: background-color 0.25s, border-color 0.25s;
+}
+
+.relief-header-text h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.relief-header-text .subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 6px 0 0 0;
+  max-width: 700px;
+}
+
+.btn-print-summary {
+  background: var(--bg-card-secondary);
+  color: var(--text-main);
+  border: 1px solid var(--border-main);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-print-summary:hover {
+  background: var(--border-main);
+  transform: translateY(-1px);
+}
+
+.medical-disclaimer-alert {
+  background: var(--primary-subtle);
+  border: 1px solid var(--primary-border);
+  color: var(--text-main);
+  padding: 14px 18px;
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.medical-disclaimer-alert .alert-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.patient-allergy-notice {
+  background: var(--danger-bg);
+  border: 1.5px solid var(--danger-border);
+  color: var(--danger-text);
+  padding: 14px 18px;
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13.5px;
+}
+
+.patient-allergy-notice .notice-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.patient-allergy-notice .nsaid-warning {
+  margin: 6px 0 0 0;
+  font-size: 13px;
+  background: rgba(239, 68, 68, 0.15);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* Toolbar & Filter */
+.relief-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-box .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--text-light);
+}
+
+.search-box input {
+  width: 100%;
+  padding: 13px 40px 13px 42px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 14.5px;
+  outline: none;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-box input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-btn {
+  background: var(--bg-card);
+  color: var(--text-sub);
+  border: 1px solid var(--border-main);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.chip-btn:hover {
+  background: var(--bg-card-secondary);
+  color: var(--text-main);
+}
+
+.chip-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  font-weight: 600;
+}
+
+/* Guides Grid */
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 24px;
+}
+
+@media (max-width: 600px) {
+  .guides-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.guide-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-main);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.guide-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.guide-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 1.5px solid var(--border-light);
+  padding-bottom: 16px;
+}
+
+.guide-title-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.guide-icon {
+  font-size: 32px;
+  background: var(--primary-subtle);
+  border-radius: 12px;
+  padding: 6px;
+  line-height: 1;
+}
+
+.guide-title-block h3 {
+  margin: 0;
+  font-size: 19px;
+  color: var(--text-main);
+}
+
+.guide-desc {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.guide-specialty-badge {
+  text-align: right;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.specialty-name {
+  display: block;
+  font-size: 13px;
+  color: var(--primary);
+  text-transform: capitalize;
+}
+
+/* Sections */
+.guide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-title.text-red {
+  color: var(--danger);
+}
+
+.otc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.otc-item {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.otc-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.otc-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.otc-badge {
+  background: var(--success-chip-bg);
+  color: var(--success-chip-text);
+  border: 1px solid var(--success-chip-border);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.otc-purpose {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.otc-notes {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.home-care-list,
+.red-flags-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.red-flags-section {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.red-flags-list {
+  color: var(--danger-text);
+}
+
+.guide-action-footer {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.btn-book-specialist {
+  width: 100%;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-book-specialist:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.no-results-card {
+  grid-column: 1 / -1;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  border: 1px dashed var(--border-main);
+}
+
+.no-results-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* Print Styling */
+@media print {
+  .header,
+  .btn-print-summary,
+  .relief-toolbar,
+  .btn-book-specialist,
+  .btn-clear-search {
+    display: none !important;
+  }
+
+  .relief-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .guide-card {
+    page-break-inside: avoid;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+}

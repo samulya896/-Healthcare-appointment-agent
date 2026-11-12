@@ -1,0 +1,204 @@
+.appointments-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.appointments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: var(--bg-card);
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border-main);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.25s, border-color 0.25s;
+}
+
+.appointments-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-main);
+}
+
+.appointments-header .subtitle {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.btn-book-new {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-book-new:hover {
+  background: var(--primary-hover);
+}
+
+.appointments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.appointment-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-main);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: background-color 0.25s, border-color 0.25s;
+}
+
+.appointment-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.status-badge.confirmed {
+  background: var(--success-bg);
+  color: var(--success-text);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.appt-id {
+  color: var(--text-light);
+  font-family: monospace;
+}
+
+.doctor-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doc-avatar {
+  font-size: 32px;
+  background: var(--primary-subtle);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.doc-name {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text-main);
+}
+
+.doc-specialty {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.appt-schedule-box {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.schedule-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.schedule-item .label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.schedule-item .val {
+  color: var(--text-main);
+  font-weight: 500;
+  text-align: right;
+}
+
+.appt-action-row {
+  margin-top: 4px;
+}
+
+.btn-calendar-sync {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  background: var(--bg-card-secondary);
+  color: var(--text-main);
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--border-main);
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.btn-calendar-sync:hover {
+  background: var(--border-main);
+  color: var(--text-main);
+}
+
+.empty-appointments-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  border: 1px dashed var(--border-main);
+  max-width: 500px;
+  margin: 40px auto;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-appointments-card h3 {
+  margin: 0 0 8px 0;
+  color: var(--text-main);
+}
+
+.empty-appointments-card p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 20px 0;
+}
+
+.btn-book-cta {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

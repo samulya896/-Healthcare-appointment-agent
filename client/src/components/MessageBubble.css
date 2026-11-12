@@ -1,0 +1,125 @@
+.message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  animation: fadeSlideUp 0.3s ease;
+}
+
+.message-row.user {
+  justify-content: flex-end;
+}
+
+.message-row.bot {
+  justify-content: flex-start;
+}
+
+.bot-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e40af, #3b82f6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.bubble {
+  max-width: 75%;
+  padding: 12px 16px;
+  position: relative;
+  word-wrap: break-word;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.bubble-user {
+  background: var(--bubble-user-bg);
+  color: var(--bubble-user-text);
+  border-radius: 16px 16px 4px 16px;
+}
+
+.bubble-bot {
+  background: var(--bubble-bot-bg);
+  color: var(--bubble-bot-text);
+  border: 1px solid var(--border-light);
+  border-radius: 16px 16px 16px 4px;
+}
+
+.bubble-error {
+  background: var(--bubble-error-bg);
+  border: 1px solid var(--bubble-error-border);
+  color: var(--bubble-error-text);
+}
+
+.bubble-text {
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* Markdown styling inside bot bubbles */
+.bubble-markdown {
+  line-height: 1.6;
+}
+
+.bubble-markdown p {
+  margin: 0 0 8px;
+}
+
+.bubble-markdown p:last-child {
+  margin-bottom: 0;
+}
+
+.bubble-markdown ul,
+.bubble-markdown ol {
+  margin: 4px 0 8px 18px;
+  padding: 0;
+}
+
+.bubble-markdown li {
+  margin-bottom: 2px;
+}
+
+.bubble-markdown strong {
+  font-weight: 600;
+}
+
+.bubble-markdown a {
+  color: var(--primary);
+  text-decoration: underline;
+  word-break: break-all;
+  font-weight: 600;
+}
+
+.bubble-user .bubble-markdown a {
+  color: #bfdbfe;
+}
+
+.bubble-markdown code {
+  background: rgba(125, 125, 125, 0.15);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.timestamp {
+  display: block;
+  font-size: 0.65rem;
+  opacity: 0.6;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.bubble-user .timestamp {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 600px) {
+  .bubble {
+    max-width: 85%;
+  }
+}
