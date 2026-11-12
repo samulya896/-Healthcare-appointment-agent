@@ -141,9 +141,9 @@ function getModel() {
  */
 async function chat(sessionId, userMessage, patientContext = null) {
   const apiKey = (process.env.GEMINI_API_KEY || "").trim();
-  const isValidAiStudioKey = apiKey.startsWith("AIzaSy");
+  const isValidAiStudioKey = apiKey.length > 20 && apiKey !== "your_gemini_api_key_here";
 
-  // If key is an OAuth token (starts with AQ.) or missing, use intelligent clinical fallback
+  // If the key is missing or still the placeholder, use the clinical fallback
   if (!isValidAiStudioKey) {
     return handleClinicalFallback(sessionId, userMessage, patientContext);
   }

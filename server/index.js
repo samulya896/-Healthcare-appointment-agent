@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: require("path").join(__dirname, ".env") });
 
 const express = require("express");
 const cors = require("cors");
@@ -34,7 +34,7 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     uptimeSeconds: Math.round(process.uptime()),
-    assistantMode: key.startsWith("AIzaSy") ? "gemini" : "clinical-fallback",
+    assistantMode: key.length > 20 && key !== "your_gemini_api_key_here" ? "gemini" : "clinical-fallback",
   });
 });
 

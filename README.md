@@ -67,7 +67,7 @@ npm run build:client       # production build -> client/dist
 |---|---|---|
 | client (Vercel) | `VITE_API_URL` | Public URL of the backend, no trailing slash. Leave empty locally. |
 | server (Render) | `GEMINI_API_KEY` | Gemini key. **Server only.** Optional — without it the clinical fallback answers. |
-| server | `GEMINI_MODEL` | Defaults to `gemini-2.5-flash` in `.env.example`. |
+| server | `GEMINI_MODEL` | Defaults to `gemini-3.1-flash-lite` in `.env.example`. |
 | server | `CORS_ORIGINS` | Comma-separated allowed origins, e.g. `https://your-app.vercel.app`. Empty = allow all. |
 | server | `PORT` | Set automatically by Render. |
 
