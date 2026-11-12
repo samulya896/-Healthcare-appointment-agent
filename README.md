@@ -96,6 +96,16 @@ In Render, set `CORS_ORIGINS` to your Vercel URL (add preview domains comma-sepa
 
 > Render's free tier sleeps after inactivity; the first request can take up to a minute. The UI shows a "connecting" banner, and the first demo action may be slow — open the site a minute before presenting.
 
+### Alternative: everything on Vercel (single project)
+
+The repo root also deploys as one Vercel project: `vercel.json` builds the client and routes `/api/*` to `api/index.js`, which serves the Express app as a serverless function.
+
+1. Vercel → **Add New → Project** → import the repo. Leave **Root Directory** as the repo root.
+2. Environment variables: `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.1-flash-lite`. Do **not** set `VITE_API_URL` (the app then calls the same domain). `CORS_ORIGINS` is not needed.
+3. Deploy.
+
+**Caveat:** serverless functions are stateless, so the in-memory data (registrations, bookings, profile edits, chat sessions) can reset on cold starts and may differ between function instances. Fine for a quick look; for a reliable live demo prefer the Render + Vercel split above, or add a database.
+
 ## API summary
 
 `GET /api/health` · `POST /api/auth/login|register` · `GET|PUT /api/patient/:id` · `GET /api/patient/:id/appointments` · `GET /api/doctors[?specialty=&q=]` · `GET /api/doctors/:id` · `GET /api/doctors/:id/availability?date=YYYY-MM-DD` · `POST /api/appointments` · `DELETE /api/appointments/:id?patientId=` · `POST /api/chat`
