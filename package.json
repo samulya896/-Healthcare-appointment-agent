@@ -7,7 +7,9 @@
     "client": "cd client && npm run dev",
     "build:client": "cd client && npm run build",
     "test:server": "cd server && npm test",
-    "install:all": "cd server && npm install && cd ../client && npm install"
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "test:client": "cd client && npm test",
+    "test": "npm run test:server && npm run test:client"
   },
   "keywords": [
     "healthcare",
@@ -22,8 +24,7 @@
     "express": "^4.21.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "@google/generative-ai": "^0.21.0",
-    "uuid": "^10.0.0"
+    "@google/generative-ai": "^0.21.0"
   },
   "engines": {
     "node": ">=18"

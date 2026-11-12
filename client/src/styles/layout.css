@@ -90,3 +90,6 @@
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .topbar-welcome { display: none; }
 }
+
+.settings-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.not-found { display: grid; place-items: center; min-height: 60dvh; }

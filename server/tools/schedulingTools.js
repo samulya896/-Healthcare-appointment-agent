@@ -1,6 +1,6 @@
 const doctors = require("../data/doctors");
 const bookings = require("../data/bookings");
-const { v4: uuidv4 } = require("uuid");
+const { randomUUID } = require("crypto");
 
 /**
  * Find doctors by specialty (case-insensitive).
@@ -80,7 +80,7 @@ function bookAppointmentTool(providerId, patientName, patientPhone, startTime, r
   // Remove slot
   slots.splice(slotIndex, 1);
 
-  const bookingId = uuidv4();
+  const bookingId = randomUUID();
 
   // Build Google Calendar link (30-min appointment)
   const calStart = dateStr.replace(/-/g, "") + "T" + timeSlot.replace(":", "") + "00";

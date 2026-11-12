@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+
 import { useAuth } from './AuthContext.jsx';
 import { sendChatMessage, resetChatSession } from '../services/api.js';
 import { firstName } from '../utils/format.js';
@@ -26,15 +26,15 @@ export function ChatProvider({ children }) {
     async (text) => {
       const clean = text.trim();
       if (!clean || sending) return;
-      setMessages((m) => [...m, { id: uuidv4(), role: 'user', text: clean }]);
+      setMessages((m) => [...m, { id: crypto.randomUUID(), role: 'user', text: clean }]);
       setSending(true);
       try {
         const reply = await sendChatMessage(clean, user);
-        setMessages((m) => [...m, { id: uuidv4(), role: 'assistant', text: reply }]);
+        setMessages((m) => [...m, { id: crypto.randomUUID(), role: 'assistant', text: reply }]);
       } catch (err) {
         setMessages((m) => [
           ...m,
-          { id: uuidv4(), role: 'assistant', text: err.message, error: true, retryText: clean },
+          { id: crypto.randomUUID(), role: 'assistant', text: err.message, error: true, retryText: clean },
         ]);
       } finally {
         setSending(false);

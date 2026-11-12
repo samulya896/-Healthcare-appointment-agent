@@ -1,0 +1,202 @@
+/* ==========================================================================
+   Glass layer — translucent, blurred surfaces over a soft aurora background.
+   Loaded last so it refines the base components without touching their layout.
+   ========================================================================== */
+
+:root {
+  --glass: rgba(255, 255, 255, 0.58);
+  --glass-strong: rgba(255, 255, 255, 0.8);
+  --glass-edge: rgba(255, 255, 255, 0.75);
+  --glass-line: rgba(15, 31, 61, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  --field: rgba(255, 255, 255, 0.66);
+  --field-2: rgba(15, 31, 61, 0.035);
+  --blur: blur(18px) saturate(165%);
+  --blur-soft: blur(10px) saturate(150%);
+  --glass-shadow: 0 1px 0 var(--glass-highlight) inset, 0 8px 30px rgba(15, 31, 61, 0.07);
+  --aurora-1: rgba(15, 118, 110, 0.20);
+  --aurora-2: rgba(61, 109, 168, 0.18);
+  --aurora-3: rgba(52, 190, 160, 0.14);
+}
+
+[data-theme='dark'] {
+  --glass: rgba(22, 36, 62, 0.52);
+  --glass-strong: rgba(17, 28, 50, 0.82);
+  --glass-edge: rgba(255, 255, 255, 0.09);
+  --glass-line: rgba(255, 255, 255, 0.07);
+  --glass-highlight: rgba(255, 255, 255, 0.06);
+  --field: rgba(255, 255, 255, 0.045);
+  --field-2: rgba(255, 255, 255, 0.04);
+  --glass-shadow: 0 1px 0 var(--glass-highlight) inset, 0 10px 34px rgba(0, 0, 0, 0.38);
+  --aurora-1: rgba(43, 179, 163, 0.17);
+  --aurora-2: rgba(95, 140, 215, 0.17);
+  --aurora-3: rgba(43, 179, 163, 0.09);
+}
+
+/* ---- Aurora background ---- */
+body { background: var(--bg); }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(640px 420px at 8% -4%, var(--aurora-1), transparent 70%),
+    radial-gradient(720px 480px at 96% 6%, var(--aurora-2), transparent 70%),
+    radial-gradient(760px 520px at 50% 108%, var(--aurora-3), transparent 70%);
+}
+
+/* ---- Surfaces ---- */
+.card,
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
+  outline: 1px solid var(--glass-line);
+  outline-offset: -1px;
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+}
+.card { transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+
+.sidebar,
+.topbar,
+.bottom-nav {
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+}
+.sidebar { border-right-color: var(--glass-line); }
+.topbar { background: color-mix(in srgb, var(--glass-strong) 70%, transparent); border-bottom-color: var(--glass-line); }
+.bottom-nav { border-top-color: var(--glass-line); }
+.popover { background: var(--glass-strong); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+
+.modal-backdrop { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.modal {
+  background: var(--glass-strong);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-shadow), var(--shadow-lg);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+}
+
+/* ---- Controls ---- */
+.input,
+.select,
+.textarea,
+.composer,
+.chip,
+.slot,
+.date-chip,
+.demo-btn,
+.btn-secondary {
+  background: var(--field);
+  -webkit-backdrop-filter: var(--blur-soft);
+  backdrop-filter: var(--blur-soft);
+}
+.btn-secondary:hover:not(:disabled),
+.demo-btn:hover:not(:disabled) { background: var(--primary-soft); }
+.chip.active,
+.date-chip.active { background: var(--primary); }
+.slot.active { background: var(--primary-soft); }
+.btn-primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 88%, #fff), var(--primary));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.22) inset, 0 4px 14px color-mix(in srgb, var(--primary) 32%, transparent);
+}
+.btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+
+.tag-item,
+.stat,
+.otc-list li,
+.book-doctor,
+.segmented,
+.mini-appt-icon { background: var(--field-2); border-color: var(--glass-line); }
+.segmented button.active { background: var(--glass-strong); }
+.alert { -webkit-backdrop-filter: var(--blur-soft); backdrop-filter: var(--blur-soft); }
+
+/* ---- Page-specific glass touches ---- */
+.quick-card:hover,
+.doctor-card:hover { transform: translateY(-2px); box-shadow: var(--glass-shadow), var(--shadow-md); }
+
+.next-appt-when {
+  background: linear-gradient(145deg, var(--primary), color-mix(in srgb, var(--primary) 62%, #06302c));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 12px 30px color-mix(in srgb, var(--primary) 28%, transparent);
+}
+.assistant-cta {
+  background: linear-gradient(135deg, var(--secondary-soft), var(--glass));
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+}
+
+.chat-scroll { background: transparent; }
+.chat-head,
+.chat-foot { background: color-mix(in srgb, var(--glass-strong) 55%, transparent); border-color: var(--glass-line); }
+.msg-bot .bubble {
+  background: var(--glass-strong);
+  border-color: var(--glass-edge);
+  -webkit-backdrop-filter: var(--blur-soft);
+  backdrop-filter: var(--blur-soft);
+}
+.msg-user .bubble { background: linear-gradient(145deg, var(--primary), color-mix(in srgb, var(--primary) 78%, #06302c)); }
+
+/* Auth: glass card on the form side; frosted tiles on the brand panel */
+.auth-card {
+  margin: auto;
+  padding: 32px;
+  border-radius: 24px;
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
+  outline: 1px solid var(--glass-line);
+  outline-offset: -1px;
+  box-shadow: var(--glass-shadow), var(--shadow-lg);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+}
+.brand-panel::after {
+  content: '';
+  position: absolute;
+  inset: auto -80px -120px auto;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 65%);
+  pointer-events: none;
+}
+.brand-panel { overflow: hidden; }
+.brand-points li {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.brand-point-icon { background: rgba(255, 255, 255, 0.16) !important; }
+
+.toast { -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+
+/* ---- Fatal error screen ---- */
+.fatal { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
+.fatal-card { max-width: 420px; padding: 32px; border-radius: 24px; display: grid; gap: 12px; justify-items: center; text-align: center; }
+
+/* ---- Fallbacks ---- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card, .glass, .sidebar, .topbar, .bottom-nav, .popover, .modal, .auth-card, .msg-bot .bubble {
+    background: var(--surface);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .card, .glass, .sidebar, .topbar, .bottom-nav, .popover, .modal, .auth-card, .msg-bot .bubble {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-card { padding: 22px 18px; border-radius: 20px; }
+}

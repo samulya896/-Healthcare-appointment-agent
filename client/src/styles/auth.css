@@ -23,7 +23,7 @@
 .auth-topbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px 0; }
 .auth-mobile-logo { display: none; }
 .auth-topbar { justify-content: flex-end; }
-.auth-card { width: 100%; max-width: 520px; margin: auto; padding: 16px 24px 40px; display: grid; gap: 20px; }
+.auth-card { width: calc(100% - 48px); max-width: 520px; display: grid; gap: 20px; }
 .auth-heading { display: grid; gap: 6px; }
 
 .segmented { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; gap: 4px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); }

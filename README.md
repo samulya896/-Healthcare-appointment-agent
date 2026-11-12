@@ -67,6 +67,7 @@ npm run build:client       # production build -> client/dist
 |---|---|---|
 | client (Vercel) | `VITE_API_URL` | Public URL of the backend, no trailing slash. Leave empty locally. |
 | server (Render) | `GEMINI_API_KEY` | Gemini key. **Server only.** Optional — without it the clinical fallback answers. |
+| server | `SESSION_SECRET` | Signs login tokens. Long random string; **set in production** (Render generates one via `render.yaml`). |
 | server | `GEMINI_MODEL` | Defaults to `gemini-3.1-flash-lite` in `.env.example`. |
 | server | `CORS_ORIGINS` | Comma-separated allowed origins, e.g. `https://your-app.vercel.app`. Empty = allow all. |
 | server | `PORT` | Set automatically by Render. |
@@ -101,7 +102,7 @@ In Render, set `CORS_ORIGINS` to your Vercel URL (add preview domains comma-sepa
 The repo root also deploys as one Vercel project: `vercel.json` builds the client and routes `/api/*` to `api/index.js`, which serves the Express app as a serverless function.
 
 1. Vercel → **Add New → Project** → import the repo. Leave **Root Directory** as the repo root.
-2. Environment variables: `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.1-flash-lite`. Do **not** set `VITE_API_URL` (the app then calls the same domain). `CORS_ORIGINS` is not needed.
+2. Environment variables: `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.1-flash-lite`, `SESSION_SECRET` (long random string). Do **not** set `VITE_API_URL` (the app then calls the same domain). `CORS_ORIGINS` is not needed.
 3. Deploy.
 
 **Caveat:** serverless functions are stateless, so the in-memory data (registrations, bookings, profile edits, chat sessions) can reset on cold starts and may differ between function instances. Fine for a quick look; for a reliable live demo prefer the Render + Vercel split above, or add a database.

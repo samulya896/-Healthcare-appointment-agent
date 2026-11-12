@@ -86,4 +86,8 @@ const patients = [
   }
 ];
 
+
+// Seed accounts use the demo password "password123"; store it hashed like real registrations.
+const { hashPassword } = require("../utils/password");
+for (const p of patients) p.password = hashPassword(p.password);
 module.exports = patients;
